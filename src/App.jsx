@@ -53,8 +53,8 @@ var weaponOptions = weapons.map((v) => ({
 
 var defaultUiParams = {
   selectedTheme: {
-    value: 'teal',
-    label: 'teal',
+    value: 'default',
+    label: 'default',
   },
   iterations: 5000,
 
