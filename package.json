@@ -1,5 +1,5 @@
 {
-  "name": "react-project-template",
+  "name": "",
   "version": "0.0.3",
   "scripts": {
     "dev": "vite",
@@ -9,7 +9,9 @@
     "generate": "func() { X=$(echo \"$1\" | python -c 'import sys; print sys.stdin.readline().rstrip().capitalize()') ; plop \"$X\" && Y=$(echo import \"$X\" from \\'./components/\"$X\"\\'); echo $Y && echo $Y | pbcopy;}; func"
   },
   "dependencies": {
+    "chart.js": "^3.7.1",
     "react": "^17.0.2",
+    "react-chartjs-2": "^4.0.1",
     "react-dom": "^17.0.2",
     "react-select": "^5.2.2"
   },
