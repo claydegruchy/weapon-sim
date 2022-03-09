@@ -14,11 +14,11 @@
 }
 
 :root {
-	--main-dark: #ffffff;
-	--main-light: #000;
-	--main-background: #ffffff;
-	--main-minorhighlights: #000;
-	--main-highlight: #ffffff;
+	--main-dark: #030e04;
+	--main-light: #00f562;
+	--main-background: #152d1b;
+	--main-minorhighlights: #8fbba4;
+	--main-highlight: #b3d0c1;
 }
 
 body {
@@ -108,6 +108,13 @@ textarea {
 	border: 2px solid;
 	/*background-color: 'var(--main-background)';*/
 	background: var(--main-background);
+}
+
+.select {
+	/*background: var(--main-highlights);*/
+	border: 2px solid var(--main-minorhighlights);
+	color: var(--main-minorhighlights);
+	/*border-style: dashed solid;*/
 }
 
 .horizontal {

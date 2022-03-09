@@ -2,11 +2,47 @@ import { useState, useEffect } from 'react';
 import logo from './logo.svg';
 import { ViewWindow } from './components/ViewWindow';
 import weapons from './components/weapons.json';
-
+import { DropDownStyles } from './components/DropDownStyles';
 import './App.css';
 import Select from 'react-select';
 
+import './scanlines.css';
+
 import { defaultOptions, aspectData } from './components/WeaponUtils';
+
+const themes = {
+  default: {
+    dark: '#030e04',
+    background: '#152d1b',
+    minorhighlights: '#8fbba4',
+    light: '#00f562',
+    highlight: '#B3D0C1',
+  },
+  teal: {
+    dark: '#092122',
+    background: '#204343',
+    minorhighlights: '#356565',
+    light: '#C2C2C2',
+    highlight: '#356565',
+  },
+  grayscale: {
+    dark: '#000000',
+    background: '#474747',
+    minorhighlights: '#8f8f8f',
+    light: '#d6d6d6',
+    highlight: '#8f8f8f',
+  },
+};
+
+const windowUrl = window.location.search;
+const params = Object.fromEntries(new URLSearchParams(windowUrl));
+
+if (params.selectedTheme) {
+  params.selectedTheme = {
+    label: params.selectedTheme,
+    value: params.selectedTheme,
+  };
+}
 
 var aspectOptions = defaultOptions.aspects;
 
@@ -16,12 +52,17 @@ var weaponOptions = weapons.map((v) => ({
 }));
 
 var defaultUiParams = {
+  selectedTheme: {
+    value: 'teal',
+    label: 'teal',
+  },
   iterations: 5000,
 
   selectedWeapons: weaponOptions.filter((a, i) => i < 10),
   ...defaultOptions,
 
   aspects: defaultOptions.aspects.filter((a) => a.default),
+  ...params,
 };
 
 function App() {
@@ -29,7 +70,18 @@ function App() {
 
   useEffect(() => {
     // Stuff to do when the UI updates
-    console.log(uiOptions);
+
+    // setting the themes
+    var cssVarPrefix = '--main-';
+    var t = uiOptions.selectedTheme;
+    if (!t) t = defaultUiParams.selectedTheme;
+    if (t && t.value) t = t.value;
+    for (var [k, v] of Object.entries(themes[t])) {
+      document.documentElement.style.setProperty(cssVarPrefix + k, v);
+      var color2 = getComputedStyle(document.documentElement).getPropertyValue(
+        cssVarPrefix + k
+      );
+    }
   }, [uiOptions]);
 
   console.log({ weaponOptions });
@@ -51,8 +103,8 @@ function App() {
           // placeholder={''}
           value={uiOptions[label]}
           onChange={set}
-          // theme={themes[uiOptions.selectedTheme.value]}
-          // styles={dropDownStyles}
+          theme={themes[uiOptions.selectedTheme.value]}
+          styles={DropDownStyles}
           options={options}
         />
       </div>
@@ -100,16 +152,12 @@ function App() {
     return (
       <div
         onClick={(e) => (s ? deselect(weapon) : select(weapon))}
-        className={'control-box'}
-        style={{
-          background: s ? 'lightblue' : 'white',
-        }}
+        className={['control-box', s ? '' : 'select'].join(' ')}
       >
         {weapon.NAME}
-
         <div
-          className={'control-box'}
-          style={{ display: 'flex', background: s ? 'lightblue' : 'white' }}
+          className={['control-box', s ? '' : 'select'].join(' ')}
+          style={{ display: 'flex' }}
         >
           <div>RANGE: {weapon.RANGE}</div>
           <div>BONUS: {weapon.BONUS}</div>
@@ -175,7 +223,7 @@ function App() {
 
   return (
     <div
-      className='App'
+      className='App crt'
       style={{
         height: '100%',
         display: 'flex',
@@ -186,6 +234,20 @@ function App() {
         className={'control-panel'}
         style={{ width: '25vw', height: '95vh', overflowY: 'auto' }}
       >
+        <div className={'control-box '}>
+          <h3 className={'center'}>TACTICAL SIMULATION SYSTEM v0.1</h3>
+          <div>
+            <a
+              href={'https://github.com/claydegruchy/'}
+              className={'center'}
+              style={{
+                padding: 5,
+              }}
+            >
+              Created by Clay D
+            </a>
+          </div>
+        </div>
         <div className={'control-box'}>
           Selected Stats
           <SearchableDropdown
@@ -194,7 +256,6 @@ function App() {
             isMulti={true}
           />
         </div>
-
         <div className={'control-box'}>
           <label htmlFor={'iterations'}>Iterations</label>
 
@@ -211,7 +272,6 @@ function App() {
             placeholder={'Iterations'}
           />
         </div>
-
         <div className={'control-box'}>
           Attacker
           <div className={'control-box'}>
@@ -247,7 +307,6 @@ function App() {
             />
           </div>
         </div>
-
         <div className={'control-box'}>
           Defender
           <div className={'control-box'}>
@@ -267,7 +326,6 @@ function App() {
             />
           </div>
         </div>
-
         <div className={'control-box'}>
           Selected Weapons
           {/* <SearchableDropdown

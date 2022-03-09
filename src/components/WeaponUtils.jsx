@@ -86,13 +86,13 @@ const runSingleTest = ({ weapon, testNo, options = defaultOptions }) => {
 
   // var damageReduction = successes.length > 1 ? successes.length - 1 : 0;
   var damageReduction = armourSaves.length > 1 ? armourSaves.length : 0;
-
+  damageReduction = -damageReduction;
   // Damage -= damageReduction;
   var result = {
     'Bonus Damage': pushedDamage,
     'Armour Damage Reduction': damageReduction,
     Damage,
-    'Total Damage': Damage + pushedDamage - damageReduction,
+    'Total Damage': Damage + pushedDamage + damageReduction,
     rawRoll,
     successes,
     failures,
