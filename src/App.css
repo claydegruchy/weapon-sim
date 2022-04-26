@@ -110,6 +110,24 @@ textarea {
 	background: var(--main-background);
 }
 
+.thin-box{
+	border: 1px solid;
+}
+
+.odd{
+	  filter: brightness(90%);
+}
+
+.even{
+	  filter: brightness(110%);
+
+}
+
+.link-hover {
+	cursor: pointer;
+  }
+
+
 .select {
 	/*background: var(--main-highlights);*/
 	border: 2px solid var(--main-minorhighlights);
@@ -149,6 +167,11 @@ a:link {
 
 a:visited {
 	color: var(--main-minorhighlights);
+}
+
+
+.label-input {
+	justify-content: space-between;
 }
 
 input[type='checkbox'] {

@@ -1,36 +1,36 @@
-import { useState, useEffect } from 'react';
-import logo from './logo.svg';
-import { ViewWindow } from './components/ViewWindow';
-import weapons from './components/weapons.json';
-import { DropDownStyles } from './components/DropDownStyles';
-import './App.css';
-import Select from 'react-select';
+import { useState, useEffect } from "react";
+import logo from "./logo.svg";
+import { ViewWindow } from "./components/ViewWindow";
+import weapons from "./components/weapons.json";
+import { DropDownStyles } from "./components/DropDownStyles";
+import "./App.css";
+import Select from "react-select";
 
-import './scanlines.css';
+import "./scanlines.css";
 
-import { defaultOptions, aspectData } from './components/WeaponUtils';
+import { defaultOptions, aspectData } from "./components/WeaponUtils";
 
 const themes = {
   default: {
-    dark: '#030e04',
-    background: '#152d1b',
-    minorhighlights: '#8fbba4',
-    light: '#00f562',
-    highlight: '#B3D0C1',
+    dark: "#030e04",
+    background: "#152d1b",
+    minorhighlights: "#8fbba4",
+    light: "#00f562",
+    highlight: "#B3D0C1",
   },
   teal: {
-    dark: '#092122',
-    background: '#204343',
-    minorhighlights: '#356565',
-    light: '#C2C2C2',
-    highlight: '#356565',
+    dark: "#092122",
+    background: "#204343",
+    minorhighlights: "#356565",
+    light: "#C2C2C2",
+    highlight: "#356565",
   },
   grayscale: {
-    dark: '#000000',
-    background: '#474747',
-    minorhighlights: '#8f8f8f',
-    light: '#d6d6d6',
-    highlight: '#8f8f8f',
+    dark: "#000000",
+    background: "#474747",
+    minorhighlights: "#8f8f8f",
+    light: "#d6d6d6",
+    highlight: "#8f8f8f",
   },
 };
 
@@ -53,10 +53,11 @@ var weaponOptions = weapons.map((v) => ({
 
 var defaultUiParams = {
   selectedTheme: {
-    value: 'default',
-    label: 'default',
+    value: "default",
+    label: "default",
   },
   iterations: 5000,
+  search: "",
 
   selectedWeapons: weaponOptions.filter((a, i) => i < 10),
   ...defaultOptions,
@@ -72,7 +73,7 @@ function App() {
     // Stuff to do when the UI updates
 
     // setting the themes
-    var cssVarPrefix = '--main-';
+    var cssVarPrefix = "--main-";
     var t = uiOptions.selectedTheme;
     if (!t) t = defaultUiParams.selectedTheme;
     if (t && t.value) t = t.value;
@@ -84,7 +85,11 @@ function App() {
     }
   }, [uiOptions]);
 
-  console.log({ weaponOptions });
+  useEffect(() => {
+    uiOptions.search;
+  }, [uiOptions.search]);
+
+  // console.log({ weaponOptions });
 
   const SearchableDropdown = ({ label, options, selectParams, isMulti }) => {
     const set = (e) => setUiOptions({ ...uiOptions, [label]: e });
@@ -110,21 +115,8 @@ function App() {
       </div>
     );
   };
-  // const Checkbox = ({ label, secretMessage }) => {
-  //   const set = (e) =>
-  //     setUiOptions({ ...uiOptions, [label]: !uiOptions[label] });
-  //   return (
-  //     <div title={secretMessage}>
-  //       <input
-  //         name={label}
-  //         type='checkbox'
-  //         checked={uiOptions[label]}
-  //         onChange={set}
-  //       />
-  //       <div>{label}</div>
-  //     </div>
-  //   );
-  // };
+
+  const search = (e) => setUiOptions({ ...uiOptions, search: e.target.value });
 
   var select = (v) =>
     setUiOptions({
@@ -146,18 +138,22 @@ function App() {
       ),
     });
 
-  const Weapon = ({ weapon, selected }) => {
+  const Weapon = ({ weapon, selected, i }) => {
     var s = !!selected.find((v) => v.value == weapon.NAME);
 
     return (
       <div
         onClick={(e) => (s ? deselect(weapon) : select(weapon))}
-        className={['control-box', s ? '' : 'select'].join(' ')}
+        className={[
+          "link-hover control-box",
+          i % 2 === 0 ? "even" : "odd",
+          s ? "" : "select",
+        ].join(" ")}
       >
         {weapon.NAME}
         <div
-          className={['control-box', s ? '' : 'select'].join(' ')}
-          style={{ display: 'flex' }}
+          className={["control-box thin-box", s ? "" : "select"].join(" ")}
+          style={{ display: "flex" }}
         >
           <div>RANGE: {weapon.RANGE}</div>
           <div>BONUS: {weapon.BONUS}</div>
@@ -173,7 +169,7 @@ function App() {
     var groups = [...new Set(weapons.map((w) => w.TYPE))];
 
     return (
-      <div style={{ flex: 4, overflowY: 'auto' }}>
+      <div style={{ flex: 4, overflowY: "auto" }}>
         {groups
           .map((type) => weapons.filter((w) => w.TYPE == type))
           .map((weapons) => {
@@ -183,7 +179,7 @@ function App() {
             );
 
             return (
-              <div className={'control-box'}>
+              <div className={"control-box thin-box"}>
                 <div
                   onClick={(e) =>
                     anySelected.length > 0
@@ -209,10 +205,10 @@ function App() {
                   }
                 >
                   {weapons[0].TYPE} (
-                  {anySelected.length > 0 ? 'Remove All' : 'Add All'})
+                  {anySelected.length > 0 ? "Remove All" : "Add All"})
                 </div>
-                {weapons.map((weapon) => (
-                  <Weapon weapon={weapon} selected={selected} />
+                {weapons.map((weapon, i) => (
+                  <Weapon weapon={weapon} selected={selected} i={i} />
                 ))}
               </div>
             );
@@ -221,25 +217,48 @@ function App() {
     );
   };
 
+  const Checkbox = ({ label, def, secretMessage }) => {
+    if (uiOptions[label] === undefined && def)
+      setUiOptions({ ...uiOptions, [label]: def });
+    const set = (e) =>
+      setUiOptions({ ...uiOptions, [label]: !uiOptions[label] });
+    return (
+      <div
+        className={"horizontal"}
+        style={{ padding: 5 }}
+        title={secretMessage}
+      >
+        <input
+          className={"form-control"}
+          name={label}
+          type="checkbox"
+          checked={uiOptions[label]}
+          onChange={set}
+        />
+        <div style={{ paddingLeft: 10 }}>{label}</div>
+      </div>
+    );
+  };
+
   return (
     <div
-      className='App crt'
+      className="App crt"
       style={{
-        height: '100%',
-        display: 'flex',
-        flexDirection: 'row',
+        height: "100%",
+        display: "flex",
+        flexDirection: "row",
       }}
     >
       <div
-        className={'control-panel'}
-        style={{ width: '25vw', height: '95vh', overflowY: 'auto' }}
+        className={"control-panel"}
+        style={{ width: "25vw", height: "95vh", overflowY: "auto" }}
       >
-        <div className={'control-box '}>
-          <h3 className={'center'}>TACTICAL SIMULATION SYSTEM v0.1</h3>
+        <div className={"control-box "}>
+          <h3 className={"center"}>TACTICAL SIMULATION SYSTEM v0.1</h3>
           <div>
             <a
-              href={'https://github.com/claydegruchy/'}
-              className={'center'}
+              href={"https://github.com/claydegruchy/"}
+              className={"center"}
               style={{
                 padding: 5,
               }}
@@ -248,20 +267,20 @@ function App() {
             </a>
           </div>
         </div>
-        <div className={'control-box'}>
+        <div className={"control-box"}>
           Selected Stats
           <SearchableDropdown
-            label={'aspects'}
+            label={"aspects"}
             options={aspectOptions}
             isMulti={true}
           />
         </div>
-        <div className={'control-box'}>
-          <label htmlFor={'iterations'}>Iterations</label>
+        <div className={"control-box horizontal label-input"}>
+          <label htmlFor={"iterations"}>Iterations</label>
 
           <input
-            name={'iterations'}
-            type={'number'}
+            name={"iterations"}
+            type={"number"}
             onChange={(e) =>
               setUiOptions({
                 ...uiOptions,
@@ -269,17 +288,17 @@ function App() {
               })
             }
             value={uiOptions.iterations}
-            placeholder={'Iterations'}
+            placeholder={"Iterations"}
           />
         </div>
-        <div className={'control-box'}>
+        <div className={"control-box"}>
           Attacker
-          <div className={'control-box'}>
-            <label htmlFor={'agility'}>Agility</label>
+          <div className={"control-box horizontal label-input"}>
+            <label htmlFor={"agility"}>Agility</label>
 
             <input
-              name={'agility'}
-              type={'number'}
+              name={"agility"}
+              type={"number"}
               onChange={(e) =>
                 setUiOptions({
                   ...uiOptions,
@@ -287,15 +306,15 @@ function App() {
                 })
               }
               value={uiOptions.agility}
-              placeholder={'Iterations'}
+              placeholder={"Agility"}
             />
           </div>
-          <div className={'control-box'}>
-            <label htmlFor={'rangedCombat'}>Ranged Combat</label>
+          <div className={"control-box horizontal label-input"}>
+            <label htmlFor={"rangedCombat"}>Ranged Combat</label>
 
             <input
-              name={'rangedCombat'}
-              type={'number'}
+              name={"rangedCombat"}
+              type={"number"}
               onChange={(e) =>
                 setUiOptions({
                   ...uiOptions,
@@ -303,18 +322,39 @@ function App() {
                 })
               }
               value={uiOptions.rangedCombat}
-              placeholder={'Iterations'}
+              placeholder={"Ranged combat"}
             />
           </div>
-        </div>
-        <div className={'control-box'}>
-          Defender
-          <div className={'control-box'}>
-            <label htmlFor={'armour'}>Armour</label>
+          <div className={"control-box horizontal label-input"}>
+            <label htmlFor={"stress"}>Stress</label>
 
             <input
-              name={'armour'}
-              type={'number'}
+              name={"stress"}
+              type={"number"}
+              onChange={(e) =>
+                setUiOptions({
+                  ...uiOptions,
+                  stress: parseInt(e.target.value),
+                })
+              }
+              value={uiOptions.stress}
+              placeholder={"Stress"}
+            />
+          </div>
+          {uiOptions.stress > 0 ? (
+            <Checkbox label={"Enable reloading"} />
+          ) : null}
+          <Checkbox label={"Use full auto"} />
+        </div>
+
+        <div className={"control-box"}>
+          Defender
+          <div className={"control-box horizontal label-input"}>
+            <label htmlFor={"armour"}>Armour</label>
+
+            <input
+              name={"armour"}
+              type={"number"}
               onChange={(e) =>
                 setUiOptions({
                   ...uiOptions,
@@ -322,29 +362,65 @@ function App() {
                 })
               }
               value={uiOptions.armour}
-              placeholder={'Iterations'}
+              placeholder={"Iterations"}
             />
           </div>
         </div>
-        <div className={'control-box'}>
-          Selected Weapons
+        <div className={"control-box"}>
+          <div className={" horizontal label-input"}>
+            <input
+              style={{ flex: 2 }}
+              name={"search"}
+              key={"x"}
+              onChange={search}
+              value={uiOptions.search}
+              placeholder={"Filter weapons"}
+            />
+            {uiOptions.search != "" ? (
+              <div
+                onClick={(e) => setUiOptions({ ...uiOptions, search: "" })}
+                className={"control-box center link-hover"}
+              >
+                [CLEAR]
+              </div>
+            ) : null}
+          </div>
+          <div
+            onClick={(e) =>
+              uiOptions.selectedWeapons.length < 1
+                ? setUiOptions({
+                    ...uiOptions,
+                    selectedWeapons: weaponOptions,
+                  })
+                : setUiOptions({
+                    ...uiOptions,
+                    selectedWeapons: [],
+                  })
+            }
+          >
+            Selected Weapons (
+            {uiOptions.selectedWeapons.length < 1 ? "Add All" : "Remove All"})
+          </div>
+
           {/* <SearchableDropdown
             label={'selectedWeapons'}
             options={weaponOptions}
             isMulti={true}
           />*/}
+
           <WeaponPicker
-            weapons={weapons}
+            weapons={weapons.filter((w) =>
+              w.NAME.toLowerCase().includes(uiOptions.search.toLowerCase())
+            )}
             selected={uiOptions.selectedWeapons}
-            onUpdate={(e) => console.log(e)}
           />
         </div>
       </div>
 
-      <div className={'map-box'}>
+      <div className={"map-box"}>
         <ViewWindow
           selectedWeapons={uiOptions.selectedWeapons}
-          weaponFilter={(w) => w.TYPE == 'PISTOLS'}
+          weaponFilter={(w) => w.TYPE == "PISTOLS"}
           aspects={uiOptions.aspects.map((s) => s.value)}
           iterations={uiOptions.iterations}
           uiOptions={uiOptions}
